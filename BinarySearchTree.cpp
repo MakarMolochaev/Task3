@@ -1,0 +1,138 @@
+#include "BinarySearchTree.h"
+#include <iostream>
+#include <queue>
+#include "bit_length.cpp"
+#include <algorithm>
+
+BinarySearchTree::BinarySearchTree() : size(0), opsSinceRebalance(0) {}
+
+BinarySearchTree::~BinarySearchTree() = default;
+
+void BinarySearchTree::Insert(int value) {
+    this->insertForNode(this->root, value);
+    this->size++;
+    this->opsSinceRebalance++;
+    checkRebalance();
+}
+
+void BinarySearchTree::insertForNode(std::unique_ptr<Node>& node, int value){
+    if (!node) {
+        node = std::make_unique<Node>(value);
+        return;
+    }
+    
+    if (value < node->data) {
+        this->insertForNode(node->L, value);
+    } else if (value > node->data) {
+        this->insertForNode(node->R, value);
+    }
+}
+
+bool BinarySearchTree::Search(int value) {
+    return searchForNode(root, value);
+}
+
+bool BinarySearchTree::searchForNode(std::unique_ptr<Node>& node, int value) {
+    if (node->data > value && node->R) {
+        return searchForNode(node->R, value);
+    } else if (node->data < value && node->L) {
+        return searchForNode(node->L, value);
+    }
+    return false;
+}
+
+int BinarySearchTree::minForNode(std::unique_ptr<Node>& node) {
+    if(!node->L) {
+        return node->data;
+    }
+    return minForNode(node->L);
+}
+
+int BinarySearchTree::maxForNode(std::unique_ptr<Node>& node) {
+    if(!node->R) {
+        return node->data;
+    }
+    return maxForNode(node->R);
+}
+
+void BinarySearchTree::Print() {
+    if (!root) {
+        std::cout << "Tree is empty" << std::endl;
+        return;
+    }
+    
+    std::queue<Node*> q;
+    q.push(root.get());
+    
+    while (!q.empty()) {
+        int levelSize = q.size();
+        
+        for (int i = 0; i < levelSize; ++i) {
+            const Node* current = q.front();
+            q.pop();
+            
+            std::cout << current->data << " ";
+            
+            if (current->L) q.push(current->L.get());
+            if (current->R) q.push(current->R.get());
+        }
+        std::cout << std::endl;
+    }
+}
+
+int BinarySearchTree::NodeCount() {
+    return this->size;
+}
+
+void BinarySearchTree::rebalance() {
+    if (!root) {
+        return;
+    }
+
+    std::vector<int> allElements;
+    
+    std::queue<Node*> q;
+    q.push(root.get());
+    while (!q.empty()) {
+        int levelSize = q.size();
+        for (int i = 0; i < levelSize; ++i) {
+            const Node* current = q.front();
+            q.pop();
+            
+            allElements.push_back(current->data);
+            
+            if (current->L) q.push(current->L.get());
+            if (current->R) q.push(current->R.get());
+        }
+    }
+
+    //for(int i=0;i<allElements.size();i++) {
+    //    std::cout << allElements[i] << " ";
+    //}
+
+    std::sort(allElements.begin(), allElements.end());
+
+    root = sortedArrayToBST(allElements, 0, this->size-1);
+
+}
+
+std::unique_ptr<Node> BinarySearchTree::sortedArrayToBST(const std::vector<int>& nums, int start, int end) {
+    if (start > end) return nullptr;
+    
+    int mid = start + (end - start) / 2;
+    std::unique_ptr<Node> node = std::make_unique<Node>(nums[mid]);
+    
+    node->L = this->sortedArrayToBST(nums, start, mid - 1);
+    node->R = this->sortedArrayToBST(nums, mid + 1, end);
+    
+    return node;
+}
+
+void BinarySearchTree::checkRebalance() {
+
+}
+
+bool BinarySearchTree::Remove(int value) {
+    checkRebalance();
+    return false;
+}
