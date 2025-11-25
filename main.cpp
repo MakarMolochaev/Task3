@@ -4,26 +4,17 @@
 int main() {
     BinarySearchTree tree;
     tree.Insert(1);
-    tree.Insert(5);
     tree.Insert(2);
     tree.Insert(3);
     tree.Insert(4);
-
-    //std::cout << tree.NodeCount() << std::endl;
-    tree.Print();
+    tree.PrettyPrint();
     std::cout << std::endl;
-    tree.rebalance();
+    tree.Insert(5);
+    tree.Insert(6);
+    tree.Insert(7);
+    tree.Insert(8);
+    tree.PrettyPrint();
     std::cout << std::endl;
-    tree.Print();
-    tree.Insert(0);
-    tree.Print();
-    tree.Insert(-100);
-    tree.Insert(-200);
-    tree.Insert(-300);
-    tree.Insert(-400);
-    tree.Print();
-    tree.rebalance();
-    std::cout << std::endl;
-    tree.Print();
+    
     return 0;
 }

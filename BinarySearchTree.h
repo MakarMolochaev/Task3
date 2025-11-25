@@ -18,15 +18,19 @@ class BinarySearchTree {
         bool Remove(int value);
         void Print();
         int NodeCount();
-        void rebalance();
+        void PrettyPrint();
 
     private:
+        void rebalance();
         void insertForNode(std::unique_ptr<Node>& node, int value);
         bool searchForNode(std::unique_ptr<Node>& node, int value);
+        bool removeForNode(std::unique_ptr<Node>& node, int value);
         int minForNode(std::unique_ptr<Node>& node);
         int maxForNode(std::unique_ptr<Node>& node);
         void checkRebalance();
         std::unique_ptr<Node> sortedArrayToBST(const std::vector<int>& nums, int start, int end);
+        void prettyPrintHelper(const Node* node, std::string prefix, bool isLast);
+        int heightHelper(const Node* node);
 };
 
 #endif

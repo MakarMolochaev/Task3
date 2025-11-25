@@ -1,7 +1,7 @@
 #include "BinarySearchTree.h"
 #include <iostream>
 #include <queue>
-#include "bit_length.cpp"
+#include <math.h>
 #include <algorithm>
 
 BinarySearchTree::BinarySearchTree() : size(0), opsSinceRebalance(0) {}
@@ -113,7 +113,6 @@ void BinarySearchTree::rebalance() {
     std::sort(allElements.begin(), allElements.end());
 
     root = sortedArrayToBST(allElements, 0, this->size-1);
-
 }
 
 std::unique_ptr<Node> BinarySearchTree::sortedArrayToBST(const std::vector<int>& nums, int start, int end) {
@@ -128,11 +127,89 @@ std::unique_ptr<Node> BinarySearchTree::sortedArrayToBST(const std::vector<int>&
     return node;
 }
 
-void BinarySearchTree::checkRebalance() {
-
+bool BinarySearchTree::Remove(int value) {
+    bool removed = removeForNode(this->root, value);
+    if (removed) {
+        this->size--;
+        this->opsSinceRebalance++;
+    }
+    checkRebalance();
+    return removed;
 }
 
-bool BinarySearchTree::Remove(int value) {
-    checkRebalance();
-    return false;
+bool BinarySearchTree::removeForNode(std::unique_ptr<Node>& node, int value) {
+    if (!node) {
+        return false;
+    }
+
+    if (value < node->data) {
+        return removeForNode(node->L, value);
+    } else if (value > node->data) {
+        return removeForNode(node->R, value);
+    } else {
+        if (!node->L && !node->R) {
+            node = nullptr;
+        } else if (!node->L) {
+            node = std::move(node->R);
+        } else if (!node->R) {
+            node = std::move(node->L);
+        } else {
+            int min_val = minForNode(node->R);
+            node->data = min_val;
+            removeForNode(node->R, min_val);
+        }
+        return true;
+    }
+}
+
+void BinarySearchTree::checkRebalance() {
+    if(this->opsSinceRebalance >= 10) {
+        double idealHeight = log2(this->size + 1);
+        int actualHeight = this->heightHelper(root.get());
+
+        if(actualHeight > 2.0 * idealHeight + 1) {
+            this->rebalance();
+            this->opsSinceRebalance = 0;
+        }
+    }
+}
+
+int BinarySearchTree::heightHelper(const Node* node) {
+    if (!node) return 0;
+    int leftH  = this->heightHelper(node->L.get());
+    int rightH = this->heightHelper(node->R.get());
+    return 1 + std::max(leftH, rightH);
+}
+
+void BinarySearchTree::PrettyPrint() {
+    if (!this->root) {
+        std::cout << "Дерево пустое\n";
+        return;
+    }
+    this->prettyPrintHelper(root.get(), "", true);
+}
+
+void BinarySearchTree::prettyPrintHelper(const Node* node, std::string prefix, bool isLast) {
+    if (!node) return;
+
+    std::cout << prefix;
+
+    std::cout << (isLast ? "\\-- " : "|-- ");
+
+    std::cout << node->data << "\n";
+
+    if (node->L || node->R) {
+        std::string newPrefix = prefix + (isLast ? "    " : "|   ");
+
+        if (node->L) {
+            bool lastChild = !node->R;
+            prettyPrintHelper(node->L.get(), newPrefix, lastChild);
+        } else {
+            std::cout << newPrefix << "|-- (null)\n";
+        }
+
+        if (node->R) {
+            prettyPrintHelper(node->R.get(), newPrefix, true);
+        }
+    }
 }
