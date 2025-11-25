@@ -29,14 +29,17 @@ void BinarySearchTree::insertForNode(std::unique_ptr<Node>& node, int value){
 }
 
 bool BinarySearchTree::Search(int value) {
-    return searchForNode(root, value);
-}
+    Node* current = root.get();
 
-bool BinarySearchTree::searchForNode(std::unique_ptr<Node>& node, int value) {
-    if (node->data > value && node->R) {
-        return searchForNode(node->R, value);
-    } else if (node->data < value && node->L) {
-        return searchForNode(node->L, value);
+    while (current) {
+        if (value == current->data) {
+            return true;
+        }
+        if (value < current->data) {
+            current = current->L.get();
+        } else {
+            current = current->R.get();
+        }
     }
     return false;
 }
@@ -163,7 +166,7 @@ bool BinarySearchTree::removeForNode(std::unique_ptr<Node>& node, int value) {
 }
 
 void BinarySearchTree::checkRebalance() {
-    if(this->opsSinceRebalance >= 10) {
+    if(this->opsSinceRebalance >= this->rebalanceRate) {
         double idealHeight = log2(this->size + 1);
         int actualHeight = this->heightHelper(root.get());
 

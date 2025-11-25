@@ -10,6 +10,7 @@ class BinarySearchTree {
         std::unique_ptr<Node> root;
         size_t size;
         size_t opsSinceRebalance;
+        const size_t rebalanceRate = 4;
     public:
         BinarySearchTree();
         ~BinarySearchTree();
@@ -23,7 +24,6 @@ class BinarySearchTree {
     private:
         void rebalance();
         void insertForNode(std::unique_ptr<Node>& node, int value);
-        bool searchForNode(std::unique_ptr<Node>& node, int value);
         bool removeForNode(std::unique_ptr<Node>& node, int value);
         int minForNode(std::unique_ptr<Node>& node);
         int maxForNode(std::unique_ptr<Node>& node);

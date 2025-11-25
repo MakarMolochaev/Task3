@@ -15,6 +15,13 @@ int main() {
     tree.Insert(8);
     tree.PrettyPrint();
     std::cout << std::endl;
-    
+
+    std::cout << tree.Search(5) << " " << tree.Search(10) << std::endl;
+    tree.Remove(5);
+    tree.PrettyPrint();
+    std::cout << std::endl;
+    tree.Insert(-1000);
+    tree.PrettyPrint();
+    std::cout << std::endl;
     return 0;
 }
